@@ -1,0 +1,1 @@
+docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/workspace terraform-aws-ubuntu
