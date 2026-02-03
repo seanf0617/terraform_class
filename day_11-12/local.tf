@@ -20,4 +20,6 @@ locals  {
             description = "allow ingress on port ${port}"
         }
     ]
+
+    instance_size = lookup(var.instance_sizes,var.environment,"t2.mirco")
 }

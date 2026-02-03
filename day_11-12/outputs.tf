@@ -9,3 +9,7 @@ output "port_list" {
 output "sg_rules" {
   value = local.sg_rules
 }
+
+output "instance)size" {
+  value = local.instance_size
+}
