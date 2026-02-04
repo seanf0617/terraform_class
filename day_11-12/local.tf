@@ -22,4 +22,17 @@ locals  {
     ]
 
     instance_size = lookup(var.instance_sizes,var.environment,"t2.mirco")
+
+    all_locations = concat(var.user_locations,var.default_locations)
+    unique_locations = toset(local.all_locations)
+
+    positive_cost = [for cost in var.monthly_costs : abs(cost) ]
+
+    current_timestamp = timestamp()
+    format1 = formatdate("yyyyMMdd", local.current_timestamp)
+    format2 = formatdate("YYYYMMDD", local.current_timestamp)
+    timestamp_name = "backup-${local.format1}"
+
+    config_file_exists = fileexists("./config.json")
+    config_data = local.config_file_exists ? jsondecode(file("./config.json")) : {}
 }
