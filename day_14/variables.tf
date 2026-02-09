@@ -24,18 +24,6 @@ variable "tags" {
   }
 }
 
-variable "bucket_names" {
-  description = "Create several S3 buckets"
-  type = list(string)
-  default = ["my-first-bucket-001", "my-second-bucket-002", "my-third-bucket-003"]
-}
-
-variable "bucket_name_set" {
-  description = "S3 bucket creation set"
-  type = set(string)
-  default = [ "my-first-bucket-004", "my-second-bucket-005", "my-third-bucket-006" ]
-}
-
 variable "ingress_rules" {
   description = "List of Ingress rules for security group"
   type = list(object({
@@ -61,4 +49,8 @@ variable "ingress_rules" {
       description = "HTTPS"
     }
   ]
+}
+
+variable "bucket" {
+  default = "my-website-from-tf-1234"
 }
