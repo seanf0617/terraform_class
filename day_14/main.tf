@@ -13,7 +13,8 @@ resource "aws_s3_bucket_public_access_block" "block" {
 
 resource "aws_cloudfront_origin_access_control" "originacesscontrol" {
   name = "originaccesscontrol"
-  origin_type = "s3"
-  http_policy = "HTTPS_ONLY"
-  supported_distributions = [aws_cloudfront_distribution.distribution.id]
+  description = "Example Policy"
+  origin_access_control_origin_type = "s3"
+  signing_behavior = "always"
+  signing_protocol = "sigv4"
 }
