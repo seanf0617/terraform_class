@@ -11,9 +11,60 @@ resource "aws_s3_bucket_public_access_block" "block" {
   restrict_public_buckets = true
 }
 
-resource "aws_cloudfront_origin_access_control" "originacesscontrol" {
-  name = "originaccesscontrol"
-  origin_type = "s3"
-  http_policy = "HTTPS_ONLY"
-  supported_distributions = [aws_cloudfront_distribution.distribution.id]
+resource "aws_cloudfront_origin_access_control" "oac" {
+  name                              = "demo-oac"
+  description                       = "Example Policy"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+resource "aws_s3_bucket_policy" "allow_cf" {
+  bucket = aws_s3_bucket.website-bucket.id
+  depends_on = [ aws_s3_bucket_public_access_block.block ]
+
+  policy = jsonencode({
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFront",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "cloudfront.amazonaws.com"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+      ],
+      "Resource": "${aws_s3_bucket.website-bucket.arn}/*"
+      Condition = {
+        StringEquals = {
+          "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
+        }
+      }
+    }
+  ]
+})
+}
+
+resource "aws_s3_bucket_object" "object" {
+  for_each = fileset("${path.module/www}","**/*")
+  bucket = aws_s3_bucket.website-bucket.id
+  key    = each.value
+  source = "${path.module/www}/${each.value}"
+  etag = filemd5("${path.module/www}/${each.value}")
+
+  content_type = lookup({
+    "html" = "text/html",
+    "css"  = "text/css",
+    "js"   = "application/javascript",
+    "json" = "application/json",
+    "png"  = "image/png",
+    "jpg"  = "image/jpeg",
+    "jpeg" = "image/jpeg",
+    "gif"  = "image/gif",
+    "svg"  = "image/svg+xml",
+    "ico"  = "image/x-icon",
+    "txt"  = "text/plain"
+  }, split(".", each.value)[length(split(".", each.value)) - 1], "application/octet-stream")
 }
