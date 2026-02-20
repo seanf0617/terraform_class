@@ -30,11 +30,10 @@ resource "aws_s3_bucket_policy" "allow_cf" {
       "Sid": "AllowCloudFront",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "cloudfront.amazonaws.com"
+        "Service": "cloudfront.amazonaws.com"
       },
       "Action": [
         "s3:GetObject",
-        "s3:ListBucket",
       ],
       "Resource": "${aws_s3_bucket.website-bucket.arn}/*"
       Condition = {
